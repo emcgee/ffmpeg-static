@@ -42,12 +42,17 @@ RUN apt-get update && apt-get install -y \
   sudo \
   tar \
   texi2html \
-  yasm \
   zlib1g-dev \
   && rm -rf /var/lib/apt/lists/*
+
+VOLUME /ffmpeg-static
+WORKDIR /ffmpeg-static
+
+# x264 latest requires nasm > 2.13
+RUN wget http://www.nasm.us/pub/nasm/releasebuilds/2.13.01/nasm-2.13.01.tar.gz \ 
+  && tar -xf nasm-2.13.01.tar.gz && cd nasm-2.13.01 && ./configure && make install && rm -rf ../nasm-*
 
 # Copy the build scripts.
 COPY build.sh download.pl env.source fetchurl /ffmpeg-static/
 
-VOLUME /ffmpeg-static
-CMD cd /ffmpeg-static; /bin/bash
+CMD /bin/bash
